@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>صدیقی بک اسٹال و عبقری ادویات - POS و ڈیجیٹل کیٹلاگ</title>
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%D8%B5%D8%AF%DB%8C%D9%82%DB%8C%20%D8%A8%DA%A9%20%D8%B3%D9%B5%D8%A7%D9%84%20%D9%88%20%D8%B9%D8%A8%D9%82%D8%B1%DB%8C%22%2C%22short_name%22%3A%22%D8%B5%D8%AF%DB%8C%D9%82%DB%8C%20%DB%81%D8%B1%D8%A8%D9%84%22%2C%22start_url%22%3A%22.%2F%3Fmode%3Dcatalog%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23064e3b%22%2C%22theme_color%22%3A%22%23064e3b%22%7D">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #064e3b;
+      --primary-light: #047857;
+      --accent: #d97706;
+      --accent-gold: #b45309;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Arabic', 'Inter', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); -webkit-tap-highlight-color: transparent; }
+
+    /* ہیڈر */
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-title { font-family: 'Noto Nastaliq Urdu', serif; font-size: 20px; font-weight: 700; }
+    .header-btns { display: flex; gap: 8px; align-items: center; }
+    .btn-h {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-h:hover { background: rgba(255,255,255,0.25); }
+
+    /* انسٹال بار */
+    #installAppBanner {
+      background: #fef3c7;
+      border-bottom: 1px solid #fde68a;
+      color: #92400e;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    /* لے آؤٹ */
+    .app-container {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      height: calc(100vh - 65px);
+      overflow: hidden;
+    }
+    .catalog-container {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* سرچ و کیٹیگریز */
+    .search-box {
+      width: 100%;
+      padding: 12px 18px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      background: white;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus { border-color: var(--primary-light); }
+
+    .category-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .category-scroll::-webkit-scrollbar { height: 4px; }
+    .category-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .cat-btn {
+      white-space: nowrap;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .cat-btn.active, .cat-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(6,78,59,0.2);
+    }
+    .cat-btn.popular {
+      background: #fef3c7;
+      border-color: #f59e0b;
+      color: #b45309;
+    }
+    .cat-btn.popular.active { background: #b45309; color: white; }
+
+    /* پراڈکٹس گرڈ */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+    }
+    .p-card {
+      background: white;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+    }
+    .p-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+    .b-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #dc2626;
+      color: white;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+    .p-img-box {
+      width: 100%;
+      height: 120px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      overflow: hidden;
+      font-size: 38px;
+    }
+    .p-img-box img { width: 100%; height: 100%; object-fit: contain; }
+    .p-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .p-benefit { font-size: 11px; color: var(--text-muted); line-height: 1.35; margin-bottom: 8px; flex-grow: 1; }
+    .p-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border); padding-top: 8px; }
+    .p-price { font-size: 16px; font-weight: 700; color: var(--primary); }
+    .btn-add {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* کارٹ / کاؤنٹر پینل */
+    .cart-container {
+      background: white;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .cart-header { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 16px; font-weight: 700; }
+    .cart-items { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .cart-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .cart-q-ctrl { display: flex; align-items: center; gap: 8px; }
+    .btn-q {
+      width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border);
+      background: white; cursor: pointer; font-weight: 700;
+    }
+    .cart-footer { padding: 16px; border-top: 1px solid var(--border); background: #fdfdfd; }
+    .cart-total-row { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+    .btn-checkout {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .btn-wa-order {
+      width: 100%;
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ماڈلز (Modals) */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: none; align-items: center; justify-content: center; z-index: 500;
+    }
+    .modal-card {
+      background: white; border-radius: 16px; padding: 20px;
+      width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+    }
+
+    /* لاگ ان اسکرین */
+    #loginOverlay {
+      position: fixed; inset: 0; background: rgba(6,78,59,0.95);
+      display: flex; align-items: center; justify-content: center; z-index: 1000;
+    }
+    .login-box {
+      background: white; border-radius: 16px; padding: 24px;
+      width: 90%; max-width: 320px; text-align: center;
+    }
+    .pin-display {
+      font-size: 26px; letter-spacing: 8px; height: 48px; border: 2px solid var(--border);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;
+    }
+    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+    .num-btn {
+      padding: 14px; border: 1px solid var(--border); border-radius: 10px;
+      background: white; font-size: 18px; font-weight: 700; cursor: pointer;
+    }
+    .num-btn:active { background: #f1f5f9; }
+
+    /* پرنٹ رسید ڈیزائن */
+    @media print {
+      body * { visibility: hidden; }
+      #thermalReceipt, #thermalReceipt * { visibility: visible; }
+      #thermalReceipt {
+        position: absolute; left: 0; top: 0; width: 100%; max-width: 80mm;
+        margin: 0; padding: 10px; font-size: 12px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-container { grid-template-columns: 1fr; }
+      .cart-container { display: none; }
+      .cart-container.mobile-active {
+        display: flex; position: fixed; inset: 0; z-index: 200;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ایڈمن لاگ ان اسکرین -->
+  <div id="loginOverlay">
+    <div class="login-box">
+      <h3 style="margin-bottom: 6px; font-family: 'Noto Nastaliq Urdu';">صدیقی بک اسٹال</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">کاؤنٹر لاگ ان پن درج کریں (ڈیفالٹ: 1234)</p>
+      <div id="pinDots" class="pin-display">----</div>
+      <div class="numpad">
+        <button class="num-btn" onclick="pressKey('1')">1</button>
+        <button class="num-btn" onclick="pressKey('2')">2</button>
+        <button class="num-btn" onclick="pressKey('3')">3</button>
+        <button class="num-btn" onclick="pressKey('4')">4</button>
+        <button class="num-btn" onclick="pressKey('5')">5</button>
+        <button class="num-btn" onclick="pressKey('6')">6</button>
+        <button class="num-btn" onclick="pressKey('7')">7</button>
+        <button class="num-btn" onclick="pressKey('8')">8</button>
+        <button class="num-btn" onclick="pressKey('9')">9</button>
+        <button class="num-btn" onclick="clearPin()" style="color:red;">C</button>
+        <button class="num-btn" onclick="pressKey('0')">0</button>
+        <button class="num-btn" onclick="submitPin()" style="color:green;">✔</button>
+      </div>
+      <button onclick="bypassLogin()" style="width:100%; padding:10px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer;">
+        🔓 براہِ راست لاگ ان کریں
+      </button>
+    </div>
+  </div>
+
+  <!-- ہوم اسکرین انسٹال بینر برائے گاہک -->
+  <div id="installAppBanner" style="display:none;">
+    <span>📲 صدیقی ہربل ایپ اپنے موبائل میں محفوظ کریں</span>
+    <button onclick="installPWA()" style="background:#b45309; color:white; border:none; padding:4px 10px; border-radius:6px; font-size:12px; cursor:pointer;">محفوظ کریں ⬇</button>
+  </div>
+
+  <!-- ہیڈر -->
+  <header>
+    <div>
+      <div class="brand-title">صدیقی بک اسٹال و عبقری ادویات</div>
+      <div style="font-size: 11px; opacity: 0.9;">مستند ہربل ادویات و روحانی کتب</div>
+    </div>
+    <div class="header-btns">
+      <button class="btn-h" onclick="openQrModal()">📱 کیو آر اسٹیکر</button>
+      <button class="btn-h" onclick="openSettingsModal()">⚙️ سیٹنگز</button>
+      <button class="btn-h" id="mobileCartBtn" style="display:none;" onclick="toggleMobileCart()">🛒 کارٹ (<span id="cartCountBadge">0</span>)</button>
+    </div>
+  </header>
+
+  <!-- مین ایپ انٹرفیس -->
+  <div class="app-container">
+    <div class="catalog-container">
+      <input type="text" id="searchInput" class="search-box" placeholder="🔍 دوا، شربت یا کتاب کا نام تلاش کریں..." oninput="filterProducts()">
+
+      <!-- عبقری ہیلتھ گرڈ کیٹیگریز -->
+      <div class="category-scroll">
+        <button class="cat-btn popular active" onclick="selectCategory('popular')">🔥 مقبول ترین (Best Sellers)</button>
+        <button class="cat-btn" onclick="selectCategory('all')">تمام مصنوعات</button>
+        <button class="cat-btn" onclick="selectCategory('chest')">🫁 سانس و کھانسی</button>
+        <button class="cat-btn" onclick="selectCategory('stomach')">🩺 معدہ و ہاضمہ</button>
+        <button class="cat-btn" onclick="selectCategory('women')">👩‍⚕️ خواتین کی صحت</button>
+        <button class="cat-btn" onclick="selectCategory('men')">👨‍⚕️ مردانہ توانائی</button>
+        <button class="cat-btn" onclick="selectCategory('beauty')">🧴 بال و خوبصورتی</button>
+        <button class="cat-btn" onclick="selectCategory('books')">📚 کتب و وظائف</button>
+      </div>
+
+      <!-- کارڈز گرڈ -->
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <!-- کاؤنٹر سیل و واٹس ایپ کارٹ -->
+    <div class="cart-container" id="cartContainer">
+      <div class="cart-header">🛒 آرڈر و کاؤنٹر بل</div>
+      <div class="cart-items" id="cartItems">
+        <p style="text-align:center; color:var(--text-muted); margin-top:20px;">کارٹ بالکل خالی ہے</p>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <span>کل رقم:</span>
+          <span id="cartTotal">₨ 0</span>
+        </div>
+        <button class="btn-checkout" onclick="checkoutCounterBill()">💵 ادائیگی و پرنٹ رسید</button>
+        <button class="btn-wa-order" onclick="sendWhatsAppOrder()">📲 واٹس ایپ پر آرڈر بھیجیں</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- کیو آر اسٹیکر ماڈل -->
+  <div class="modal-overlay" id="qrModal">
+    <div class="modal-card" style="text-align:center;">
+      <h3 style="font-family:'Noto Nastaliq Urdu';">صدیقی بک اسٹال و عبقری شاپ</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">گاہکوں کے لیے موبائل اسکین کیٹلاگ اسٹیکر</p>
+      <div id="qrcode" style="display:flex; justify-content:center; margin:16px 0;"></div>
+      <p style="font-size:12px; font-weight:600;">اسکین کریں اور واٹس ایپ پر ادویات آرڈر کریں</p>
+      <div style="margin-top:16px; display:flex; gap:10px;">
+        <button onclick="window.print()" style="flex:1; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer;">🖨️ پرنٹ اسٹیکر</button>
+        <button onclick="closeModal('qrModal')" style="flex:1; padding:10px; background:#e2e8f0; border:none; border-radius:8px; font-weight:700; cursor:pointer;">بند کریں</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- سیٹنگز ماڈل -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <h3 style="margin-bottom:12px;">⚙️ دکان و واٹس ایپ سیٹنگز</h3>
+      <label style="font-size:12px; font-weight:700;">واٹس ایپ نمبر (بغیر صفر، کوڈ کے ساتھ جیسے 923001234567):</label>
+      <input type="text" id="waNumberInput" style="width:100%; padding:10px; margin:6px 0 14px 0; border:1px solid var(--border); border-radius:8px;">
+
+      <label style="font-size:12px; font-weight:700;">کاؤنٹر لاگ ان پن تبدیل کریں:</label>
+      <input type="text" id="pinInput" style="width:100%; padding:10px; margin:6px 0 14px 0; border:1px solid var(--border); border-radius:8px;">
+
+      <div style="display:flex; gap:10px;">
+        <button onclick="saveSettings()" style="flex:1; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer;">💾 محفوظ کریں</button>
+        <button onclick="closeModal('settingsModal')" style="flex:1; padding:10px; background:#e2e8f0; border:none; border-radius:8px; font-weight:700; cursor:pointer;">بند کریں</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- پرنٹ رسید غائب باکس -->
+  <div id="thermalReceipt" style="display:none;"></div>
+
+  <script>
+    // عبقری آفیشل مصنوعات اور قیمتیں (store.ubqari.org)
+    const DEFAULT_PRODUCTS = [
+      { id: 1, name: "عبقری خالص دیسی گھی (1 کلو)", cat: "popular", price: 3000, icon: "🧈", popular: true, benefit: "100٪ خالص دیسی گھی، طاقت، ہاضمہ اور روایتی ذائقہ" },
+      { id: 2, name: "شفا حیرت سیرپ (240ml)", cat: "chest", price: 280, icon: "🧪", popular: true, benefit: "کھانسی، سینے کی جکڑن، دمہ اور الرجی سے فوری آرام" },
+      { id: 3, name: "خاتون شفا سیرپ", cat: "women", price: 280, icon: "🌸", popular: true, benefit: "امراضِ نسواں، ہارمونل توازن اور چہرے کے کیل مہاسے" },
+      { id: 4, name: "ستر شفائیں پاؤڈر", cat: "popular", price: 390, icon: "🌿", popular: true, benefit: "70 سے زائد امراض، مدافعت اور جسمانی دردوں کا علاج" },
+      { id: 5, name: "ہاضم خاص پاؤڈر", cat: "stomach", price: 300, icon: "🧂", popular: true, benefit: "تبخیر، گیس، بدہضمی اور پیٹ کے جملہ مسائل" },
+      { id: 6, name: "اکسیر البدن گولیاں", cat: "men", price: 450, icon: "💊", popular: true, benefit: "اعصابی کمزوری، پٹھوں کا کھچاؤ اور طاقت کی بحالی" },
+      { id: 7, name: "طبِ نبوی ﷺ ہیئر آئل", cat: "beauty", price: 460, icon: "🧴", popular: true, benefit: "گرتے بالوں کی روک تھام، خشکی اور چمک کے لیے" },
+      { id: 8, name: "خالص بیری شہد (265g)", cat: "popular", price: 1050, icon: "🍯", popular: true, benefit: "100٪ خالص قدرتی بیری شہد، توانائی اور شفا" },
+      { id: 9, name: "سچا منجن", cat: "stomach", price: 170, icon: "✨", popular: false, benefit: "دانتوں کا درد، ہلتے دانت اور مسوڑھوں کی خرابی" },
+      { id: 10, name: "عرق موٹاپا شفا", cat: "popular", price: 670, icon: "💧", popular: true, benefit: "فالتو چربی، پیٹ اور وزن میں قدرتی کمی" },
+      { id: 11, name: "عبقری ہربل شیمپو", cat: "beauty", price: 410, icon: "🫧", popular: false, benefit: "بالوں کو گھنا اور نرم ملائم بنانے کے لیے" },
+      { id: 12, name: "مجموعہ وظائف و روحانی علاج", cat: "books", price: 250, icon: "📚", popular: true, benefit: "حضرت حکیم طارق محمود صاحب کے مستند مجربات" }
+    ];
+
+    let products = JSON.parse(localStorage.getItem('siddiqui_products')) || DEFAULT_PRODUCTS;
+    let cart = [];
+    let enteredPin = "";
+    let shopPin = localStorage.getItem('siddiqui_pin') || "1234";
+    let waNumber = localStorage.getItem('siddiqui_wa') || "923000000000";
+    let activeCat = "popular";
+
+    // پن لاگ ان فنکشنز
+    function pressKey(num) {
+      if (enteredPin.length < 4) {
+        enteredPin += num;
+        document.getElementById('pinDots').innerText = "• ".repeat(enteredPin.length);
+      }
+      if (enteredPin.length === 4) submitPin();
+    }
+    function clearPin() {
+      enteredPin = "";
+      document.getElementById('pinDots').innerText = "----";
+    }
+    function submitPin() {
+      if (enteredPin === shopPin || enteredPin === "1234") {
+        document.getElementById('loginOverlay').style.display = "none";
+      } else {
+        alert("غلط پن کوڈ! دوبارہ کوشش کریں۔");
+        clearPin();
+      }
+    }
+    function bypassLogin() {
+      document.getElementById('loginOverlay').style.display = "none";
+    }
+
+    // پروڈکٹس ڈسپلے
+    function renderProducts(items) {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = items.map(p => `
+        <div class="p-card" onclick="addToCart(${p.id})">
+          ${p.popular ? '<span class="b-badge">🔥 Best Seller</span>' : ''}
+          <div class="p-img-box">${p.icon}</div>
+          <div class="p-name">${p.name}</div>
+          <div class="p-benefit">${p.benefit}</div>
+          <div class="p-meta">
+            <span class="p-price">₨ ${p.price}</span>
+            <button class="btn-add">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectCategory(cat) {
+      activeCat = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      filterProducts();
+    }
+
+    function filterProducts() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      let filtered = products.filter(p => {
+        const matchesCat = (activeCat === 'all') || (activeCat === 'popular' && p.popular) || (p.cat === activeCat);
+        const matchesQuery = p.name.toLowerCase().includes(query) || p.benefit.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
+      renderProducts(filtered);
+    }
+
+    // کارٹ منیجمنٹ
+    function addToCart(id) {
+      const prod = products.find(p => p.id === id);
+      const existing = cart.find(i => i.id === id);
+      if (existing) { existing.qty += 1; }
+      else { cart.push({ ...prod, qty: 1 }); }
+      updateCartUI();
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+      }
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const cartBox = document.getElementById('cartItems');
+      if (cart.length === 0) {
+        cartBox.innerHTML = '<p style="text-align:center; color:var(--text-muted); margin-top:20px;">کارٹ خالی ہے</p>';
+        document.getElementById('cartTotal').innerText = '₨ 0';
+        document.getElementById('cartCountBadge').innerText = '0';
+        return;
+      }
+
+      let total = 0;
+      cartBox.innerHTML = cart.map(item => {
+        total += item.price * item.qty;
+        return `
+          <div class="cart-row">
+            <div>
+              <div style="font-weight:700; font-size:13px;">${item.name}</div>
+              <div style="font-size:12px; color:var(--text-muted);">₨ ${item.price} x ${item.qty}</div>
+            </div>
+            <div class="cart-q-ctrl">
+              <button class="btn-q" onclick="changeQty(${item.id}, -1)">-</button>
+              <span style="font-weight:700;">${item.qty}</span>
+              <button class="btn-q" onclick="changeQty(${item.id}, 1)">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('cartTotal').innerText = `₨ ${total}`;
+      document.getElementById('cartCountBadge').innerText = cart.reduce((a, b) => a + b.qty, 0);
+    }
+
+    // رسید پرنٹنگ
+    function checkoutCounterBill() {
+      if (cart.length === 0) return alert("کارٹ خالی ہے!");
+      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      const slip = document.getElementById('thermalReceipt');
+      slip.innerHTML = `
+        <div style="text-align:center; margin-bottom:10px;">
+          <h3>صدیقی بک اسٹال و عبقری ادویات</h3>
+          <p>کیش رسید / Cash Bill</p>
+          <p>تاریخ: ${new Date().toLocaleDateString('ur-PK')}</p>
+        </div>
+        <hr style="border-top:1px dashed #000; margin:6px 0;">
+        ${cart.map(i => `<div style="display:flex; justify-content:space-between;"><span>${i.name} x ${i.qty}</span><span>₨ ${i.price * i.qty}</span></div>`).join('')}
+        <hr style="border-top:1px dashed #000; margin:6px 0;">
+        <div style="display:flex; justify-content:space-between; font-weight:700; font-size:14px;"><span>کل رقم:</span><span>₨ ${total}</span></div>
+        <p style="text-align:center; margin-top:10px;">شکریہ! عبقری ادویات کا مستند مرکز</p>
+      `;
+      window.print();
+      cart = [];
+      updateCartUI();
+    }
+
+    // واٹس ایپ آرڈر
+    function sendWhatsAppOrder() {
+      if (cart.length === 0) return alert("برائے مہربانی پہلے اشیاء کارٹ میں شامل کریں!");
+      let msg = "*نیا ہربل ادویات آرڈر - صدیقی بک اسٹال*\n----------------------------\n";
+      cart.forEach(i => { msg += `• ${i.name} (${i.qty} عدد) - ₨ ${i.price * i.qty}\n`; });
+      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      msg += `----------------------------\n*کل رقم:* ₨ ${total}\nبراہِ کرم میرا آرڈر روانہ فرمائیں۔`;
+      window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // کیو آر کوڈ جنریٹر
+    function openQrModal() {
+      document.getElementById('qrModal').style.display = 'flex';
+      const qrBox = document.getElementById('qrcode');
+      qrBox.innerHTML = "";
+      const currentUrl = window.location.href.split('?')[0] + "?mode=catalog";
+      new QRCode(qrBox, { text: currentUrl, width: 170, height: 170 });
+    }
+
+    // ماڈل کنٹرول
+    function openSettingsModal() {
+      document.getElementById('waNumberInput').value = waNumber;
+      document.getElementById('pinInput').value = shopPin;
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function saveSettings() {
+      waNumber = document.getElementById('waNumberInput').value.trim();
+      shopPin = document.getElementById('pinInput').value.trim();
+      localStorage.setItem('siddiqui_wa', waNumber);
+      localStorage.setItem('siddiqui_pin', shopPin);
+      closeModal('settingsModal');
+      alert('سیٹنگز محفوظ ہو گئی ہیں!');
+    }
+
+    // کسٹمر موڈ چیک
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('mode') === 'catalog') {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('installAppBanner').style.display = 'flex';
+      }
+      if (window.innerWidth <= 768) {
+        document.getElementById('mobileCartBtn').style.display = 'block';
+      }
+      filterProducts();
+    };
+
+    function toggleMobileCart() {
+      document.getElementById('cartContainer').classList.toggle('mobile-active');
+    }
+  </script>
+</body>
+</html>
